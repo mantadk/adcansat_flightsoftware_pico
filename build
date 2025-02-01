@@ -10,7 +10,7 @@ rm -rf outdir
 mkdir outdir
 cd outdir
 cmake ..
-make -j$(nproc)
+make # -j$(nproc)
 cd ..
 cp outdir/blink.uf2 ./blink.uf2
 rm -rf outdir
