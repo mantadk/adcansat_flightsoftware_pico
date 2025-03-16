@@ -27,8 +27,8 @@ int main() {
         } else {
             gpio_put(LED, 0);
         }
-        std::string str = "Temperature: " + std::to_string(data.temperature) + " Pressure: " + std::to_string(data.pressure) + " Humidity: " + std::to_string(data.humidity) + " Upside Down: " + std::to_string(upsideDown);
-        sendString(str);
+        std::string datasummary = "Temperature: " + std::to_string(data.temperature) + " Pressure: " + std::to_string(data.pressure) + " Humidity: " + std::to_string(data.humidity) + " Upside Down: " + std::to_string(upsideDown);
+        sendString(datasummary);
     }
 
     return 0;
