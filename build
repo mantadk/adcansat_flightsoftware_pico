@@ -3,8 +3,8 @@ set -e  # Stop script on error
 
 export PICO_SDK_PATH=./pico-sdk
 
-SCRIPT_DIR=$(dirname "$(realpath "$0")")
-cd "$SCRIPT_DIR"
+# SCRIPT_DIR=$(dirname "$(realpath "$0")")
+# cd "$SCRIPT_DIR"
 
 rm -rf outdir
 mkdir outdir
