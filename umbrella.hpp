@@ -19,4 +19,4 @@ typedef struct BME280Data {
 
 bool isUpsideDown();
 BME280Data readBME280();
-int sendString(std::string str);
+int sendString(const std::string& data);
