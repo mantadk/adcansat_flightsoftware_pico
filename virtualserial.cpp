@@ -9,9 +9,9 @@ void waitForReceive() {
     while (gpio_get(VIRTUAL_ENABLE_LINE) == 0) {
         //blink led 
         gpio_put(LED, 1);
-        sleep_ms(10);
+        sleep_ms(50);
         gpio_put(LED, 0);
-        sleep_ms(10);
+        sleep_ms(50);
     }
 }
 

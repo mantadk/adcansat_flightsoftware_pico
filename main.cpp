@@ -15,12 +15,12 @@ void init_gpio()
     gpio_set_dir(VIRTUAL_ENABLE_LINE, GPIO_IN);
     gpio_init(VIRTUAL_NOTIFY_LINE);
     gpio_set_dir(VIRTUAL_NOTIFY_LINE, GPIO_OUT);
-    for (int i = 0; i < 500; i++) {
+    for (int i = 0; i < 10; i++) {
         //blink led 
         gpio_put(LED, 1);
-        sleep_ms(10);
+        sleep_ms(100);
         gpio_put(LED, 0);
-        sleep_ms(10);
+        sleep_ms(100);
     }
 }
 
