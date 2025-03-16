@@ -12,7 +12,3 @@ add_executable(blink main.cpp sensors.cpp virtualserial.cpp)
 target_link_libraries(blink pico_stdlib hardware_i2c)
 
 pico_add_extra_outputs(blink)
-
-add_compile_options(-fexceptions)
-
-target_compile_options(blink PRIVATE -fexceptions)

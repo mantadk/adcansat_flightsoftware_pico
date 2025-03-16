@@ -41,19 +41,12 @@ int main()
     init_gpio();
     while (true)
     {
-        try
-        {
-            BME280Data data = readBME280();
-            bool upsideDown = isUpsideDown();
-            const std::string &datasummary = "Temperature: " + std::to_string(data.temperature) + " Pressure: " + std::to_string(data.pressure) + " Humidity: " + std::to_string(data.humidity) + " Upside Down: " + std::to_string(upsideDown);
-            int res = sendString(datasummary);
-            if (res != 0)
-            {
-                // blink red
-                catch_error();
-            }
-        }
-        catch (...)
+        //BME280Data data = readBME280();
+        bool upsideDown = isUpsideDown();
+        const std::string &datasummary = "Is the sensor upside down? " + upsideDown? "Yes" : "No";
+        //"Temperature: " + std::to_string(data.temperature) + " Pressure: " + std::to_string(data.pressure) + " Humidity: " + std::to_string(data.humidity) + " Upside Down: " + std::to_string(upsideDown);
+        int res = sendString(datasummary);
+        if (res != 0)
         {
             // blink red
             catch_error();
