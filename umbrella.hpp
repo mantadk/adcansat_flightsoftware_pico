@@ -1,4 +1,6 @@
 #include "pico/stdlib.h"
+#include "hardware/i2c.h"     // I2C hardware functions
+#include "hardware/gpio.h"    // GPIO hardware functions
 #include <string>
 
 #define LED 25
