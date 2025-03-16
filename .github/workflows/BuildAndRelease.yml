@@ -22,4 +22,8 @@ jobs:
               with:
                   name: UF2
                   path: blink.uf2
-                
+            - name: Upload UF2 release
+              uses: ./.github/actions/release  # Uses the local composite action
+              with:
+                major_minor_version: "v1.0"
+                github_token: ${{ secrets.GITHUB_TOKEN }}
