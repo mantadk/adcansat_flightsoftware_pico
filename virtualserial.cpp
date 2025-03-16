@@ -5,6 +5,8 @@ void waitForReceive() {
     gpio_put(VIRTUAL_NOTIFY_LINE, 1);
     //write low on clock
     gpio_put(VIRTUAL_CLOCK_LINE, 0);
+    //write low on data
+    gpio_put(VIRTUAL_DATA_LINE, 0);
     //wait for enable line to go high
     gpio_put(LED, 1);
     while (gpio_get(VIRTUAL_ENABLE_LINE) == 0) {
