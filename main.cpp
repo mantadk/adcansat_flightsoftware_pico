@@ -1,16 +1,4 @@
-#include "pico/stdlib.h"
-
-#define LED 25
-#define UPSIDE_DOWN_SENSOR 10
-
-#define VIRTUAL_DATA_LINE 2
-#define VIRTUAL_CLOCK_LINE 3
-#define VIRTUAL_ENABLE_LINE 4
-#define VIRTUAL_NOTIFY_LINE 5
-
-bool is_gpio10_high() {                             //Is the sensor upside down?
-    return gpio_get(UPSIDE_DOWN_SENSOR);            // Read and return the state
-}
+#include "umbrella.hpp"
 
 void init_gpio()
 {
@@ -18,13 +6,29 @@ void init_gpio()
     gpio_set_dir(LED, GPIO_OUT);                    // Set LED pin as output
     gpio_init(UPSIDE_DOWN_SENSOR);                  // Initialize GPIO10
     gpio_set_dir(UPSIDE_DOWN_SENSOR, GPIO_IN);      // Set as input
+    // Initialize virtual serial pins
+    gpio_init(VIRTUAL_DATA_LINE);
+    gpio_set_dir(VIRTUAL_DATA_LINE, GPIO_OUT);
+    gpio_init(VIRTUAL_CLOCK_LINE);
+    gpio_set_dir(VIRTUAL_CLOCK_LINE, GPIO_OUT);
+    gpio_init(VIRTUAL_ENABLE_LINE);
+    gpio_set_dir(VIRTUAL_ENABLE_LINE, GPIO_IN);
+    gpio_init(VIRTUAL_NOTIFY_LINE);
+    gpio_set_dir(VIRTUAL_NOTIFY_LINE, GPIO_OUT);
 }
 
 int main() {
     init_gpio();
-
     while (true) {
-        gpio_put(LED, is_gpio10_high());
+        BME280Data data = readBME280();
+        bool upsideDown = isUpsideDown();
+        if (upsideDown) {
+            gpio_put(LED, 1);
+        } else {
+            gpio_put(LED, 0);
+        }
+        std::string str = "Temperature: " + std::to_string(data.temperature) + " Pressure: " + std::to_string(data.pressure) + " Humidity: " + std::to_string(data.humidity) + " Upside Down: " + std::to_string(upsideDown);
+        sendString(str);
     }
 
     return 0;
