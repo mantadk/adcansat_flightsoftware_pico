@@ -1,4 +1,5 @@
 #include "pico/stdlib.h"
+#include <string>
 
 #define LED 25
 #define UPSIDE_DOWN_SENSOR 10
