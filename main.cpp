@@ -3,10 +3,10 @@
 #define LED 25
 #define UPSIDE_DOWN_SENSOR 10
 
-#define VIRTUAL_DATA_LINE 4
-#define VIRTUAL_CLOCK_LINE 5
-#define VIRTUAL_ENABLE_LINE 6
-#define VIRTUAL_NOTIFY_LINE 7
+#define VIRTUAL_DATA_LINE 2
+#define VIRTUAL_CLOCK_LINE 3
+#define VIRTUAL_ENABLE_LINE 4
+#define VIRTUAL_NOTIFY_LINE 5
 
 bool is_gpio10_high() {                             //Is the sensor upside down?
     return gpio_get(UPSIDE_DOWN_SENSOR);            // Read and return the state
