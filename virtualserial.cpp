@@ -6,11 +6,12 @@ void waitForReceive() {
     //write low on clock
     gpio_put(VIRTUAL_CLOCK_LINE, 0);
     //wait for enable line to go high
+    gpio_put(LED, 1);
     while (gpio_get(VIRTUAL_ENABLE_LINE) == 0) {
         //blink led 
-        gpio_put(LED, 1);
-        sleep_ms(50);
         gpio_put(LED, 0);
+        sleep_ms(50);
+        gpio_put(LED, 1);
         sleep_ms(50);
     }
 }
@@ -44,6 +45,7 @@ int sendString(const std::string& data) {
     // Send newline character
     uint8_t endChar = '\n';
     sendData(endChar);
-
+    gpio_put(VIRTUAL_NOTIFY_LINE, 0);
+    gpio_put(LED, 0);
     return 0;
 }
