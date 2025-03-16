@@ -19,6 +19,6 @@ source ~/.bashrc
 
 echo "Checking gcc-arm-none-eabi installation..."
 ls -l "$GCC_ARM_DIR/bin/"
-which gcc-arm-none-eabi || true
+which arm-none-eabi-gcc || true
 
-gcc-arm-none-eabi --version
+arm-none-eabi-gcc --version
