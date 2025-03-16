@@ -55,6 +55,9 @@ int main()
         }
         catch (const std::exception &e)
         {
+            //print e
+            printf("Error: %s\n", e.what());
+            // blink red
             catch_error();
         }
     }
