@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Get arm-none-eabi-gcc
+if [ ! -d ./gcc-arm-none-eabi-10-2020-q4-major ]; then
+    wget https://developer.arm.com/-/media/Files/downloads/gnu-rm/10.2-2020.11/gcc-arm-none-eabi-10-2020-q4-major-x86_64-linux.tar.bz2
+    tar -xvf gcc-arm-none-eabi-10-2020-q4-major-x86_64-linux.tar.bz2
+    rm gcc-arm-none-eabi-10-2020-q4-major-x86_64-linux.tar.bz2
+fi
+export PATH=$PWD/gcc-arm-none-eabi-10-2020-q4-major/bin:$PATH
+echo "export PATH=$PWD/gcc-arm-none-eabi-10-2020-q4-major/bin:\$PATH" >> ~/.bashrc
+echo "export PATH=$PWD/gcc-arm-none-eabi-10-2020-q4-major/bin:\$PATH" >> ~/.bash_profile
+echo "export PATH=$PWD/gcc-arm-none-eabi-10-2020-q4-major/bin:\$PATH" >> ~/.profile
+echo "export PATH=$PWD/gcc-arm-none-eabi-10-2020-q4-major/bin:\$PATH" >> ~/.bash_login

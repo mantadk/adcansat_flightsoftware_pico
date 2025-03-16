@@ -13,6 +13,8 @@ jobs:
               uses: actions/checkout@v4
             - name: Set up pico-sdk
               run: bash get_pico_sdk
+            - name: Set up arm-none-eabi-gcc
+              run: bash get_gcc
             - name: Build project
               run: bash build
             - name: Upload artifact
