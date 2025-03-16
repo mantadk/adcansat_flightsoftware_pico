@@ -26,15 +26,19 @@ void sendData(uint8_t data) {
     }
 }
 
-int sendString(std::string data) {
-    //send each character in the string
+int sendString(const std::string& data) {
+    // Wait for the receiver to be ready
     waitForReceive();
-    for (int i = 0; i < data.length(); i++) {
-        uint8_t data = data[i];
-        sendData(data);
+
+    // Send each character in the string
+    for (size_t i = 0; i < data.length(); i++) {
+        uint8_t ch = static_cast<uint8_t>(data[i]);
+        sendData(ch);
     }
-    //send newline character
-    uint8_t endchar = '\n';
-    sendData(endchar);
+
+    // Send newline character
+    uint8_t endChar = '\n';
+    sendData(endChar);
+
     return 0;
 }
