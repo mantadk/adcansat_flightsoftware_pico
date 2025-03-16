@@ -44,6 +44,7 @@ int sendString(const std::string& data) {
 
     // Send newline character
     uint8_t endChar = '\n';
+    waitForReceive();
     sendData(endChar);
     gpio_put(VIRTUAL_NOTIFY_LINE, 0);
     gpio_put(LED, 0);
