@@ -1,13 +1,20 @@
 #!/bin/bash
+set -e
 
-# Get arm-none-eabi-gcc
-if [ ! -d ./gcc-arm-none-eabi-10-2020-q4-major ]; then
-    wget https://developer.arm.com/-/media/Files/downloads/gnu-rm/10.2-2020.11/gcc-arm-none-eabi-10-2020-q4-major-x86_64-linux.tar.bz2
-    tar -xvf gcc-arm-none-eabi-10-2020-q4-major-x86_64-linux.tar.bz2
-    rm gcc-arm-none-eabi-10-2020-q4-major-x86_64-linux.tar.bz2
-fi
-export PATH=$PWD/gcc-arm-none-eabi-10-2020-q4-major/bin:$PATH
-echo "export PATH=$PWD/gcc-arm-none-eabi-10-2020-q4-major/bin:\$PATH" >> ~/.bashrc
-echo "export PATH=$PWD/gcc-arm-none-eabi-10-2020-q4-major/bin:\$PATH" >> ~/.bash_profile
-echo "export PATH=$PWD/gcc-arm-none-eabi-10-2020-q4-major/bin:\$PATH" >> ~/.profile
-echo "export PATH=$PWD/gcc-arm-none-eabi-10-2020-q4-major/bin:\$PATH" >> ~/.bash_login
+# Define the required version of the toolchain
+GCC_ARM_VERSION="12.2.Rel1"
+GCC_ARM_URL="https://developer.arm.com/-/media/Files/downloads/gnu-rm/${GCC_ARM_VERSION}/gcc-arm-none-eabi-${GCC_ARM_VERSION}-x86_64-linux.tar.bz2"
+GCC_ARM_DIR="$HOME/gcc-arm-none-eabi"
+
+# Install dependencies
+sudo apt update && sudo apt install -y cmake ninja-build python3-pip
+
+# Download and extract the ARM toolchain
+mkdir -p "$GCC_ARM_DIR"
+wget -qO- "$GCC_ARM_URL" | tar -xj --strip-components=1 -C "$GCC_ARM_DIR"
+
+# Export paths
+export PATH="$GCC_ARM_DIR/bin:$PATH"
+echo "export PATH=\"$GCC_ARM_DIR/bin:\$PATH\"" >> ~/.bashrc
+
+gcc-arm-none-eabi --version
