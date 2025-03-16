@@ -1,24 +1,26 @@
 #!/bin/bash
 set -e
 
-# Define the required version of the toolchain
-GCC_ARM_URL="https://developer.arm.com/-/media/Files/downloads/gnu-rm/10.3-2021.10/gcc-arm-none-eabi-10.3-2021.10-x86_64-linux.tar.bz2"
-GCC_ARM_DIR="$HOME/gcc-arm-none-eabi"
+sudo apt install gcc-arm-none-eabi
 
-# Install dependencies
-sudo apt update && sudo apt install -y cmake ninja-build python3-pip
+# # Define the required version of the toolchain
+# GCC_ARM_URL="https://developer.arm.com/-/media/Files/downloads/gnu-rm/10.3-2021.10/gcc-arm-none-eabi-10.3-2021.10-x86_64-linux.tar.bz2"
+# GCC_ARM_DIR="$HOME/gcc-arm-none-eabi"
 
-# Download and extract the ARM toolchain
-mkdir -p "$GCC_ARM_DIR"
-wget -qO- "$GCC_ARM_URL" | tar -xj --strip-components=1 -C "$GCC_ARM_DIR"
+# # Install dependencies
+# sudo apt update && sudo apt install -y cmake ninja-build python3-pip
 
-# Export paths
-export PATH="$GCC_ARM_DIR/bin:$PATH"
-echo "export PATH=\"$GCC_ARM_DIR/bin:\$PATH\"" >> ~/.bashrc
-source ~/.bashrc
+# # Download and extract the ARM toolchain
+# mkdir -p "$GCC_ARM_DIR"
+# wget -qO- "$GCC_ARM_URL" | tar -xj --strip-components=1 -C "$GCC_ARM_DIR"
 
-echo "Checking gcc-arm-none-eabi installation..."
-ls -l "$GCC_ARM_DIR/bin/"
-which arm-none-eabi-gcc || true
+# # Export paths
+# export PATH="$GCC_ARM_DIR/bin:$PATH"
+# echo "export PATH=\"$GCC_ARM_DIR/bin:\$PATH\"" >> ~/.bashrc
+# source ~/.bashrc
 
-arm-none-eabi-gcc --version
+# echo "Checking gcc-arm-none-eabi installation..."
+# ls -l "$GCC_ARM_DIR/bin/"
+# which arm-none-eabi-gcc || true
+
+# arm-none-eabi-gcc --version
