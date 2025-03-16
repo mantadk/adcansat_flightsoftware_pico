@@ -28,19 +28,17 @@ void sendData(uint8_t data) {
     for (int i = 0; i < 8; i++) {
         gpio_put(VIRTUAL_DATA_LINE, bits[i]);
         gpio_put(VIRTUAL_CLOCK_LINE, 1);
-        sleep_ms(10);
+        sleep_ms(100);
         gpio_put(VIRTUAL_CLOCK_LINE, 0);
-        sleep_ms(10);
+        sleep_ms(100);
     }
 }
 
 int sendString(const std::string& data) {
-    // Wait for the receiver to be ready
-    waitForReceive();
-
     // Send each character in the string
     for (size_t i = 0; i < data.length(); i++) {
         uint8_t ch = static_cast<uint8_t>(data[i]);
+        waitForReceive();
         sendData(ch);
     }
 
