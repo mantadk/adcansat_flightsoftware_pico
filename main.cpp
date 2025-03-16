@@ -33,7 +33,7 @@ int main() {
     while (true) {
         BME280Data data = readBME280();
         bool upsideDown = isUpsideDown();
-        std::string datasummary = "Temperature: " + std::to_string(data.temperature) + " Pressure: " + std::to_string(data.pressure) + " Humidity: " + std::to_string(data.humidity) + " Upside Down: " + std::to_string(upsideDown);
+        const std::string& datasummary = "Temperature: " + std::to_string(data.temperature) + " Pressure: " + std::to_string(data.pressure) + " Humidity: " + std::to_string(data.humidity) + " Upside Down: " + std::to_string(upsideDown);
         int res = sendString(datasummary);
         if (res != 0) {
             //blink red
