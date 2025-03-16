@@ -17,20 +17,27 @@ void init_gpio()
     gpio_set_dir(VIRTUAL_NOTIFY_LINE, GPIO_OUT);
 }
 
+void catch_error()
+{
+    while (true)
+    {
+        gpio_put(LED, 1); // Turn on the LED
+        sleep_ms(500);    // Wait for 500ms
+        gpio_put(LED, 0); // Turn off the LED
+        sleep_ms(500);    // Wait for 500ms
+    }
+}
+
 int main() {
     init_gpio();
     while (true) {
         BME280Data data = readBME280();
         bool upsideDown = isUpsideDown();
-        if (upsideDown) {
-            gpio_put(LED, 1);
-        } else {
-            gpio_put(LED, 0);
-        }
         std::string datasummary = "Temperature: " + std::to_string(data.temperature) + " Pressure: " + std::to_string(data.pressure) + " Humidity: " + std::to_string(data.humidity) + " Upside Down: " + std::to_string(upsideDown);
         int res = sendString(datasummary);
         if (res != 0) {
-            return res;
+            //blink red
+            catch_error();
         }
     }
 
