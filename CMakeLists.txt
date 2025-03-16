@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 pico_sdk_init()
 
-add_executable(blink main.cpp)
+add_executable(blink main.cpp sensors.cpp virtualserial.cpp)
 
 target_link_libraries(blink pico_stdlib)
 
