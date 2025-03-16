@@ -14,10 +14,5 @@ make # -j$(nproc)
 cd ..
 cp outdir/blink.uf2 ./blink.uf2
 rm -rf outdir
-echo "Copy blink.uf2 to the pico in boootsel mode"
-# wait for /media/gorak/RPI-RP2/ to appear
-while [ ! -d /media/gorak/RPI-RP2/ ]; do
-  sleep 1
-done
-cp blink.uf2 /media/gorak/RPI-RP2/
+
 
