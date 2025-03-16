@@ -7,6 +7,11 @@ void waitForReceive() {
     gpio_put(VIRTUAL_CLOCK_LINE, 0);
     //wait for enable line to go high
     while (gpio_get(VIRTUAL_ENABLE_LINE) == 0) {
+        //blink led 
+        gpio_put(LED, 1);
+        sleep_ms(100);
+        gpio_put(LED, 0);
+        sleep_ms(100);
     }
 }
 
