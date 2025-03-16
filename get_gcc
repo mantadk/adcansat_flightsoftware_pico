@@ -15,5 +15,10 @@ wget -qO- "$GCC_ARM_URL" | tar -xj --strip-components=1 -C "$GCC_ARM_DIR"
 # Export paths
 export PATH="$GCC_ARM_DIR/bin:$PATH"
 echo "export PATH=\"$GCC_ARM_DIR/bin:\$PATH\"" >> ~/.bashrc
+source ~/.bashrc
+
+echo "Checking gcc-arm-none-eabi installation..."
+ls -l "$GCC_ARM_DIR/bin/"
+which gcc-arm-none-eabi || true
 
 gcc-arm-none-eabi --version
