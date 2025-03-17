@@ -126,7 +126,8 @@ long signed int Read_Temperature(i2c_inst_t *i2c)
 
 long signed int Compensate_Temperature(long signed int raw, bme280_calib_data_temp calib)
 {
-    unsigned short dig_T1, signed short dig_T2, signed short dig_T3;
+    unsigned short dig_T1;
+    signed short dig_T2, dig_T3;
     dig_T1 = calib.dig_T1;
     dig_T2 = calib.dig_T2;
     dig_T3 = calib.dig_T3;
