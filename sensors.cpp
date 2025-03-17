@@ -26,8 +26,58 @@ const uint8_t BME280_REG_CONFIG = 0xF5;
 const uint8_t BME280_REG_PRESS_MSB = 0xF7;
 const uint8_t BME280_REG_TEMP_MSB = 0xFA;
 const uint8_t BME280_REG_HUM_MSB = 0xFD;
-const uint8_t BME280_REG_CALIB_00 = 0x88;
-const uint8_t BME280_REG_CALIB_26 = 0xE1;
+
+const uint8_t BME_REG_CALIB_dig_T1 = 0x88; //7:0, 15:8, unsigned short
+const uint8_t BME_REG_CALIB_dig_T2 = 0x8A; //7:0, 15:8, signed short
+const uint8_t BME_REG_CALIB_dig_T3 = 0x8C; //7:0, 15:8, signed short
+const uint8_t BME_REG_CALIB_dig_P1 = 0x8E; //7:0, 15:8, unsigned short
+const uint8_t BME_REG_CALIB_dig_P2 = 0x90; //7:0, 15:8, signed short
+const uint8_t BME_REG_CALIB_dig_P3 = 0x92; //7:0, 15:8, signed short
+const uint8_t BME_REG_CALIB_dig_P4 = 0x94; //7:0, 15:8, signed short
+const uint8_t BME_REG_CALIB_dig_P5 = 0x96; //7:0, 15:8, signed short
+const uint8_t BME_REG_CALIB_dig_P6 = 0x98; //7:0, 15:8, signed short
+const uint8_t BME_REG_CALIB_dig_P7 = 0x9A; //7:0, 15:8, signed short
+const uint8_t BME_REG_CALIB_dig_P8 = 0x9C; //7:0, 15:8, signed short
+const uint8_t BME_REG_CALIB_dig_P9 = 0x9E; //7:0, 15:8, signed short
+const uint8_t BME_REG_CALIB_dig_H1 = 0xA1; //7:0, unsigned char
+const uint8_t BME_REG_CALIB_dig_H2 = 0xE1; //7:0, 15:8, signed short
+const uint8_t BME_REG_CALIB_dig_H3 = 0xE3; //7:0, unsigned char
+const uint8_t BME_REG_CALIB_dig_H4 = 0xE4; //7:0, 15:8, signed short
+const uint8_t BME_REG_CALIB_dig_H5 = 0xE5; //7:0, 15:8, signed short
+
+/*
+Both pressure and temperature values are expected to be received in 
+    20 bit format, 
+    positive, 
+    stored in a 32 bit signed integer. 
+Humidity is expected to be received in 
+    16 bit format, 
+    positive,
+    stored in a 32 bit signed integer.
+*/
+
+
+void init_bme280(i2c_inst_t *i2c)
+{
+    //clock: 100kHz
+    //sensor mode: forced mode
+    //highest oversampling for temperature, pressure and humidity
+    //highest filter coefficient
+    //highest resolution
+    uint8_t sensor_mode = 0b01; //forced mode
+    uint8_t temp_oversampling = 0b101; //x16
+    uint8_t press_oversampling = 0b101; //x16
+    uint8_t hum_oversampling = 0b101; //x16
+    uint8_t filter_coefficient = 0b100; //16
+    uint8_t spi3w_en = 0b0; //3-wire SPI disabled
+    uint8_t config = (spi3w_en << 0) | (filter_coefficient << 2);
+    uint8_t ctrl_meas = (temp_oversampling << 5) | (press_oversampling << 2) | sensor_mode;
+    uint8_t ctrl_hum = hum_oversampling;
+    bme280_write_byte(i2c, BME280_REG_CTRL_MEAS, ctrl_meas);
+    bme280_write_byte(i2c, BME280_REG_CONFIG, config);
+    bme280_write_byte(i2c, BME280_REG_CTRL_MEAS, ctrl_meas);
+}
+
 
 // Function to read a single byte from the BME280
 uint8_t bme280_read_byte(i2c_inst_t *i2c, uint8_t reg)
@@ -52,128 +102,37 @@ void bme280_write_byte(i2c_inst_t *i2c, uint8_t reg, uint8_t data)
     i2c_write_blocking(i2c, BME280_ADDR, buf, 2, false);
 }
 
-// Function to read calibration data from the BME280
-void bme280_read_calibration_data(i2c_inst_t *i2c, struct bme280_calib_data *calib)
-{
-    uint8_t calib_data[32];
-    bme280_read_bytes(i2c, BME280_REG_CALIB_00, calib_data, 26);
-    bme280_read_bytes(i2c, BME280_REG_CALIB_26, &calib_data[26], 7);
 
-    calib->dig_T1 = calib_data[1] << 8 | calib_data[0];
-    calib->dig_T2 = (int16_t)(calib_data[3] << 8 | calib_data[2]);
-    calib->dig_T3 = (int16_t)(calib_data[5] << 8 | calib_data[4]);
-    calib->dig_P1 = calib_data[7] << 8 | calib_data[6];
-    calib->dig_P2 = (int16_t)(calib_data[9] << 8 | calib_data[8]);
-    calib->dig_P3 = (int16_t)(calib_data[11] << 8 | calib_data[10]);
-    calib->dig_P4 = (int16_t)(calib_data[13] << 8 | calib_data[12]);
-    calib->dig_P5 = (int16_t)(calib_data[15] << 8 | calib_data[14]);
-    calib->dig_P6 = (int16_t)(calib_data[17] << 8 | calib_data[16]);
-    calib->dig_P7 = (int16_t)(calib_data[19] << 8 | calib_data[18]);
-    calib->dig_P8 = (int16_t)(calib_data[21] << 8 | calib_data[20]);
-    calib->dig_P9 = (int16_t)(calib_data[23] << 8 | calib_data[22]);
-    calib->dig_H1 = calib_data[25];
-    calib->dig_H2 = (int16_t)(calib_data[27] << 8 | calib_data[26]);
-    calib->dig_H3 = calib_data[28];
-    calib->dig_H4 = (int16_t)(calib_data[29] << 4 | (calib_data[30] & 0x0F));
-    calib->dig_H5 = (int16_t)((calib_data[31] << 4) | (calib_data[30] >> 4));
-    calib->dig_H6 = (int8_t)calib_data[32];
+bme280_calib_data_temp Read_Temperature_Calibration_Data(i2c_inst_t *i2c)
+{
+    bme280_calib_data_temp calib;
+    uint8_t data[6];
+    bme280_read_bytes(i2c, BME_REG_CALIB_dig_T1, data, 2);
+    calib.dig_T1 = (data[1] << 8) | data[0];
+    bme280_read_bytes(i2c, BME_REG_CALIB_dig_T2, data, 2);
+    calib.dig_T2 = (data[1] << 8) | data[0];
+    bme280_read_bytes(i2c, BME_REG_CALIB_dig_T3, data, 2);
+    calib.dig_T3 = (data[1] << 8) | data[0];
+    return calib;
 }
 
-// Function to read temperature, pressure, and humidity from the BME280
-void bme280_read_measurements(i2c_inst_t *i2c, struct bme280_calib_data *calib, float *temperature, float *pressure, float *humidity)
+long signed int Read_Temperature(i2c_inst_t *i2c)
 {
-    uint8_t data[8];
-    bme280_read_bytes(i2c, BME280_REG_PRESS_MSB, data, 8);
-
-    int32_t raw_pressure = (data[0] << 12) | (data[1] << 4) | (data[2] >> 4);
-    int32_t raw_temperature = (data[3] << 12) | (data[4] << 4) | (data[5] >> 4);
-    int32_t raw_humidity = (data[6] << 8) | data[7];
-
-    // Temperature compensation
-    int32_t var1 = ((((raw_temperature >> 3) - ((int32_t)calib->dig_T1 << 1))) * ((int32_t)calib->dig_T2)) >> 11;
-    int32_t var2 = (((((raw_temperature >> 4) - ((int32_t)calib->dig_T1)) * ((raw_temperature >> 4) - ((int32_t)calib->dig_T1))) >> 12) * ((int32_t)calib->dig_T3)) >> 14;
-    int32_t t_fine = var1 + var2;
-    *temperature = (float)((t_fine * 5 + 128) >> 8) / 100.0f;
-
-    // Pressure compensation
-    var1 = ((int32_t)t_fine >> 1) - 64000;
-    var2 = (((var1 >> 2) * (var1 >> 2)) >> 11) * ((int32_t)calib->dig_P6);
-    var2 = var2 + ((var1 * ((int32_t)calib->dig_P5)) << 1);
-    var2 = (var2 >> 2) + (((int32_t)calib->dig_P4) << 16);
-    var1 = (((int32_t)calib->dig_P3) * (((var1 >> 2) * (var1 >> 2)) >> 13)) >> 3;
-    var1 = var1 + ((((int32_t)calib->dig_P2) * var1) >> 1);
-    var1 = var1 >> 18;
-    var1 = (((32768 + var1)) * ((int32_t)calib->dig_P1)) >> 15;
-    // Example of pressure calculation, review BME280 datasheet for correct calculation.
-    if (var1 == 0)
-    {
-        *pressure = 0;
-    }
-    else
-    {
-        *pressure = ((1048576.0f - raw_pressure) - (var2 / 4096.0f)) * 3125.0f; // division instead of bitshift
-        if (*pressure < 0x80000000)
-        {
-            *pressure = (*pressure * 2.0f) / var1; // multiplication and division instead of bitshift.
-        }
-        else
-        {
-            *pressure = (*pressure / var1) * 2.0f;
-        }
-        var1 = (((int32_t)calib->dig_P9) * ((int32_t)(*pressure / 8.0f)) * ((int32_t)(*pressure / 8.0f))) / 4096.0f; // division instead of bitshift.
-        var2 = (((int32_t)(*pressure / 4.0f)) * ((int32_t)calib->dig_P8)) / 8192.0f;                                 // division instead of bitshift.
-        *pressure = (float)*pressure + ((var1 + var2 + ((int32_t)calib->dig_P7)) / 16.0f);
-        *pressure /= 100.0f; // Convert to hPa
-    }
-
-    // Humidity compensation
-    int32_t v_x1_u32r;
-    v_x1_u32r = (t_fine - ((int32_t)76800));
-    v_x1_u32r = (((((raw_humidity << 14) - (((int32_t)calib->dig_H4) << 20) - (((int32_t)calib->dig_H5) * v_x1_u32r)) +
-                   ((int32_t)16384)) >>
-                  15) *
-                 (((((((v_x1_u32r * ((int32_t)calib->dig_H6)) >> 10) *
-                      (((v_x1_u32r * ((int32_t)calib->dig_H3)) >> 11) + ((int32_t)32768))) >>
-                     10) +
-                    ((int32_t)2097152)) *
-                       ((int32_t)calib->dig_H2) +
-                   8192) >>
-                  14));
-    v_x1_u32r = (v_x1_u32r - (((((v_x1_u32r >> 15) * (v_x1_u32r >> 15)) >> 7) *
-                               ((int32_t)calib->dig_H1)) >>
-                              4));
-    v_x1_u32r = (v_x1_u32r < 0 ? 0 : v_x1_u32r);
-    v_x1_u32r = (v_x1_u32r > 419430400 ? 419430400 : v_x1_u32r);
-    *humidity = (float)(v_x1_u32r >> 12) / 1024.0f;
+    uint8_t data[3];
+    bme280_read_bytes(i2c, BME280_REG_TEMP_MSB, data, 3);
+    long signed int raw = (data[0] << 12) | (data[1] << 4) | (data[2] >> 4);
+    return raw;
 }
 
-bool bme280_init(i2c_inst_t *i2c)
+long signed int Compensate_Temperature(long signed int raw, bme280_calib_data_temp calib)
 {
-    // Check device ID
-    uint8_t chip_id = bme280_read_byte(i2c, BME280_REG_ID);
-    if (chip_id != 0x60)
-    {
-        return false; // Device ID mismatch, initialization failed
-    }
-
-    // Set config register: t_sb = 0.5ms, filter = 4, spi3w_en = disabled
-    bme280_write_byte(i2c, BME280_REG_CONFIG, 0b10010000);
-
-    // Set ctrl_meas register: osrs_t = x1, osrs_p = x1, mode = normal
-    bme280_write_byte(i2c, BME280_REG_CTRL_MEAS, 0b00100111); // normal mode
-
-    return true; // Initialization successful
-}
-
-std::string bme280_read_measurements_string(i2c_inst_t *i2c, struct bme280_calib_data *calib)
-{
-    float temperature, pressure, humidity;
-    bme280_read_measurements(i2c, calib, &temperature, &pressure, &humidity);
-
-    std::stringstream ss;
-    ss << std::fixed << std::setprecision(2); // Set precision to 2 decimal places
-
-    ss << "t:" << temperature << ";p:" << pressure << ";h:" << humidity;
-
-    return ss.str();
+    unsigned short dig_T1, signed short dig_T2, signed short dig_T3;
+    dig_T1 = calib.dig_T1;
+    dig_T2 = calib.dig_T2;
+    dig_T3 = calib.dig_T3;
+    long signed int var1, var2, T;
+    var1 = ((((raw>>3)-((long signed int)dig_T1<<1)))*((long signed int)dig_T2))>>11;
+    var2 = (((((raw>>4)-((long signed int)dig_T1))*((raw>>4)-((long signed int)dig_T1)))>>12)*((long signed int)dig_T3))>>14;
+    T = ((var1 + var2) * 5 + 128) >> 8;
+    return T;
 }

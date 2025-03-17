@@ -19,32 +19,39 @@ typedef struct BME280Data {
     float humidity;
 } BME280Data;
 
-struct bme280_calib_data {
-    uint16_t dig_T1;
-    int16_t dig_T2;
-    int16_t dig_T3;
-    uint16_t dig_P1;
-    int16_t dig_P2;
-    int16_t dig_P3;
-    int16_t dig_P4;
-    int16_t dig_P5;
-    int16_t dig_P6;
-    int16_t dig_P7;
-    int16_t dig_P8;
-    int16_t dig_P9;
-    uint8_t dig_H1;
-    int16_t dig_H2;
-    uint8_t dig_H3;
-    int16_t dig_H4;
-    int16_t dig_H5;
-    int8_t dig_H6;
+struct bme280_calib_data_temp {
+    unsigned short dig_T1;
+    signed short dig_T2;
+    signed short dig_T3;
+};
+
+struct bme280_calib_data_press {
+    unsigned short dig_P1;
+    signed short dig_P2;
+    signed short dig_P3;
+    signed short dig_P4;
+    signed short dig_P5;
+    signed short dig_P6;
+    signed short dig_P7;
+    signed short dig_P8;
+    signed short dig_P9;
+};
+
+struct bme280_calib_data_hum {
+    unsigned char dig_H1;
+    signed short dig_H2;
+    unsigned char dig_H3;
+    signed short dig_H4;
+    signed short dig_H5;
 };
 
 bool isUpsideDown();
-// void initBME280();
-// BME280Data readBME280();
-// int sendString(const std::string& data);
 void sendVUARTString(std::string data);
-bool bme280_init(i2c_inst_t *i2c);
-void bme280_read_calibration_data(i2c_inst_t *i2c, struct bme280_calib_data *calib);
-std::string bme280_read_measurements_string(i2c_inst_t *i2c, struct bme280_calib_data *calib);
+
+//BME280 functions
+void init_bme280(i2c_inst_t *i2c)
+//temperature
+bme280_calib_data_temp Read_Temperature_Calibration_Data(i2c_inst_t *i2c);
+long signed int Read_Temperature(i2c_inst_t *i2c);
+long signed int Compensate_Temperature(long signed int raw, bme280_calib_data_temp calib);
+//pressure

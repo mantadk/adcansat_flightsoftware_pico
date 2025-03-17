@@ -48,16 +48,15 @@ int main()
     gpio_set_function(scl_pin, GPIO_FUNC_I2C);
     gpio_pull_up(sda_pin);
     gpio_pull_up(scl_pin);
-    if (!bme280_init(i2c)) {
-        printf("BME280 initialization failed!\n");
-        return 1; // Exit with error code
-    }
-    struct bme280_calib_data calib;
-    bme280_read_calibration_data(i2c, &calib);
-
+    init_bme280(i2c);
+    bme280_calib_data_temp calib = Read_Temperature_Calibration_Data(i2c);
     while (true)
     {
-        std::string datasummary = bme280_read_measurements_string(i2c, &calib);
+        long signed int raw = Read_Temperature(i2c);
+        long signed int temp = Compensate_Temperature(raw, calib);
+        std::stringstream ss;
+        ss << "Temperature: " << temp << " C";
+        std::string datasummary = ss.str();
         sendVUARTString(datasummary);
         sleep_ms(100);
     }
