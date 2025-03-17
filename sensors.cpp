@@ -1,10 +1,11 @@
 #include "umbrella.hpp"
 
-bool isUpsideDown() {                             //Is the sensor upside down?
-    return !(gpio_get(UPSIDE_DOWN_SENSOR));            // Read and return the state
+bool isUpsideDown()
+{                                           // Is the sensor upside down?
+    return !(gpio_get(UPSIDE_DOWN_SENSOR)); // Read and return the state
 }
 
-//read BME 280 sensor data via I2C
+// read BME 280 sensor data via I2C
 
 // void initBME280() {
 //     i2c_init(i2c0, 100000);
@@ -28,9 +29,9 @@ const uint8_t BME280_REG_HUM_MSB = 0xFD;
 const uint8_t BME280_REG_CALIB_00 = 0x88;
 const uint8_t BME280_REG_CALIB_26 = 0xE1;
 
-
 // Function to read a single byte from the BME280
-uint8_t bme280_read_byte(i2c_inst_t *i2c, uint8_t reg) {
+uint8_t bme280_read_byte(i2c_inst_t *i2c, uint8_t reg)
+{
     uint8_t data;
     i2c_write_blocking(i2c, BME280_ADDR, &reg, 1, true);
     i2c_read_blocking(i2c, BME280_ADDR, &data, 1, false);
@@ -38,19 +39,22 @@ uint8_t bme280_read_byte(i2c_inst_t *i2c, uint8_t reg) {
 }
 
 // Function to read multiple bytes from the BME280
-void bme280_read_bytes(i2c_inst_t *i2c, uint8_t reg, uint8_t *buf, uint8_t len) {
+void bme280_read_bytes(i2c_inst_t *i2c, uint8_t reg, uint8_t *buf, uint8_t len)
+{
     i2c_write_blocking(i2c, BME280_ADDR, &reg, 1, true);
     i2c_read_blocking(i2c, BME280_ADDR, buf, len, false);
 }
 
 // Function to write a single byte to the BME280
-void bme280_write_byte(i2c_inst_t *i2c, uint8_t reg, uint8_t data) {
+void bme280_write_byte(i2c_inst_t *i2c, uint8_t reg, uint8_t data)
+{
     uint8_t buf[] = {reg, data};
     i2c_write_blocking(i2c, BME280_ADDR, buf, 2, false);
 }
 
 // Function to read calibration data from the BME280
-void bme280_read_calibration_data(i2c_inst_t *i2c, struct bme280_calib_data *calib) {
+void bme280_read_calibration_data(i2c_inst_t *i2c, struct bme280_calib_data *calib)
+{
     uint8_t calib_data[32];
     bme280_read_bytes(i2c, BME280_REG_CALIB_00, calib_data, 26);
     bme280_read_bytes(i2c, BME280_REG_CALIB_26, &calib_data[26], 7);
@@ -76,7 +80,8 @@ void bme280_read_calibration_data(i2c_inst_t *i2c, struct bme280_calib_data *cal
 }
 
 // Function to read temperature, pressure, and humidity from the BME280
-void bme280_read_measurements(i2c_inst_t *i2c, struct bme280_calib_data *calib, float *temperature, float *pressure, float *humidity) {
+void bme280_read_measurements(i2c_inst_t *i2c, struct bme280_calib_data *calib, float *temperature, float *pressure, float *humidity)
+{
     uint8_t data[8];
     bme280_read_bytes(i2c, BME280_REG_PRESS_MSB, data, 8);
 
@@ -99,18 +104,25 @@ void bme280_read_measurements(i2c_inst_t *i2c, struct bme280_calib_data *calib, 
     var1 = var1 + ((((int32_t)calib->dig_P2) * var1) >> 1);
     var1 = var1 >> 18;
     var1 = (((32768 + var1)) * ((int32_t)calib->dig_P1)) >> 15;
-    if (var1 == 0) {
+    // Example of pressure calculation, review BME280 datasheet for correct calculation.
+    if (var1 == 0)
+    {
         *pressure = 0;
-    } else {
-        *pressure = ((1048576 - raw_pressure) - (var2 >> 12)) * 3125;
-        if (*pressure < 0x80000000) {
-            *pressure = (*pressure << 1) / var1;
-        } else {
-            *pressure = (*pressure / var1) * 2;
+    }
+    else
+    {
+        *pressure = ((1048576.0f - raw_pressure) - (var2 / 4096.0f)) * 3125.0f; // division instead of bitshift
+        if (*pressure < 0x80000000)
+        {
+            *pressure = (*pressure * 2.0f) / var1; // multiplication and division instead of bitshift.
         }
-        var1 = (((int32_t)calib->dig_P9) * ((int32_t)(*pressure >> 3)) * ((int32_t)(*pressure >> 3))) >> 12;
-        var2 = (((int32_t)(*pressure >> 2)) * ((int32_t)calib->dig_P8)) >> 13;
-        *pressure = (float)*pressure + ((var1 + var2 + ((int32_t)calib->dig_P7)) >> 4);
+        else
+        {
+            *pressure = (*pressure / var1) * 2.0f;
+        }
+        var1 = (((int32_t)calib->dig_P9) * ((int32_t)(*pressure / 8.0f)) * ((int32_t)(*pressure / 8.0f))) / 4096.0f; // division instead of bitshift.
+        var2 = (((int32_t)(*pressure / 4.0f)) * ((int32_t)calib->dig_P8)) / 8192.0f;                                 // division instead of bitshift.
+        *pressure = (float)*pressure + ((var1 + var2 + ((int32_t)calib->dig_P7)) / 16.0f);
         *pressure /= 100.0f; // Convert to hPa
     }
 
@@ -118,15 +130,15 @@ void bme280_read_measurements(i2c_inst_t *i2c, struct bme280_calib_data *calib, 
     int32_t v_x1_u32r;
     v_x1_u32r = (t_fine - ((int32_t)76800));
     v_x1_u32r = (((((raw_humidity << 14) - (((int32_t)calib->dig_H4) << 20) - (((int32_t)calib->dig_H5) * v_x1_u32r)) +
-                  ((int32_t)16384)) >>
-                 15) *
-                (((((((v_x1_u32r * ((int32_t)calib->dig_H6)) >> 10) *
-                    (((v_x1_u32r * ((int32_t)calib->dig_H3)) >> 11) + ((int32_t)32768))) >>
-                   10) +
-                  ((int32_t)2097152)) *
-                     ((int32_t)calib->dig_H2) +
-                 8192) >>
-                14));
+                   ((int32_t)16384)) >>
+                  15) *
+                 (((((((v_x1_u32r * ((int32_t)calib->dig_H6)) >> 10) *
+                      (((v_x1_u32r * ((int32_t)calib->dig_H3)) >> 11) + ((int32_t)32768))) >>
+                     10) +
+                    ((int32_t)2097152)) *
+                       ((int32_t)calib->dig_H2) +
+                   8192) >>
+                  14));
     v_x1_u32r = (v_x1_u32r - (((((v_x1_u32r >> 15) * (v_x1_u32r >> 15)) >> 7) *
                                ((int32_t)calib->dig_H1)) >>
                               4));
@@ -135,10 +147,12 @@ void bme280_read_measurements(i2c_inst_t *i2c, struct bme280_calib_data *calib, 
     *humidity = (float)(v_x1_u32r >> 12) / 1024.0f;
 }
 
-bool bme280_init(i2c_inst_t *i2c) {
+bool bme280_init(i2c_inst_t *i2c)
+{
     // Check device ID
     uint8_t chip_id = bme280_read_byte(i2c, BME280_REG_ID);
-    if (chip_id != 0x60) {
+    if (chip_id != 0x60)
+    {
         return false; // Device ID mismatch, initialization failed
     }
 
@@ -146,12 +160,13 @@ bool bme280_init(i2c_inst_t *i2c) {
     bme280_write_byte(i2c, BME280_REG_CONFIG, 0b10010000);
 
     // Set ctrl_meas register: osrs_t = x1, osrs_p = x1, mode = normal
-    bme280_write_byte(i2c, BME280_REG_CTRL_MEAS, 0b00100111); //normal mode
+    bme280_write_byte(i2c, BME280_REG_CTRL_MEAS, 0b00100111); // normal mode
 
     return true; // Initialization successful
 }
 
-std::string bme280_read_measurements_string(i2c_inst_t *i2c, struct bme280_calib_data *calib) {
+std::string bme280_read_measurements_string(i2c_inst_t *i2c, struct bme280_calib_data *calib)
+{
     float temperature, pressure, humidity;
     bme280_read_measurements(i2c, calib, &temperature, &pressure, &humidity);
 
