@@ -35,6 +35,7 @@ void sendData(uint8_t data) {
     }
 }
 
+
 int sendString(const std::string& data) {
     //Notify master, that there is data to be sent #srieughvbe
     gpio_put(VIRTUAL_NOTIFY_LINE, 1);
