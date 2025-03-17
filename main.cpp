@@ -55,7 +55,6 @@ int main()
     struct bme280_calib_data calib;
     bme280_read_calibration_data(i2c, &calib);
 
-    
     while (true)
     {
         std::string datasummary = bme280_read_measurements_string(i2c, &calib);

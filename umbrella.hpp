@@ -2,6 +2,8 @@
 #include "hardware/i2c.h"     // I2C hardware functions
 #include "hardware/gpio.h"    // GPIO hardware functions
 #include <string>
+#include <iomanip>
+#include <sstream>
 
 #define LED 25
 #define UPSIDE_DOWN_SENSOR 10
