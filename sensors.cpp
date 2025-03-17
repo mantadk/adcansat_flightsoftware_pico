@@ -57,28 +57,6 @@ Humidity is expected to be received in
 */
 
 
-void init_bme280(i2c_inst_t *i2c)
-{
-    //clock: 100kHz
-    //sensor mode: forced mode
-    //highest oversampling for temperature, pressure and humidity
-    //highest filter coefficient
-    //highest resolution
-    uint8_t sensor_mode = 0b01; //forced mode
-    uint8_t temp_oversampling = 0b101; //x16
-    uint8_t press_oversampling = 0b101; //x16
-    uint8_t hum_oversampling = 0b101; //x16
-    uint8_t filter_coefficient = 0b100; //16
-    uint8_t spi3w_en = 0b0; //3-wire SPI disabled
-    uint8_t config = (spi3w_en << 0) | (filter_coefficient << 2);
-    uint8_t ctrl_meas = (temp_oversampling << 5) | (press_oversampling << 2) | sensor_mode;
-    uint8_t ctrl_hum = hum_oversampling;
-    bme280_write_byte(i2c, BME280_REG_CTRL_MEAS, ctrl_meas);
-    bme280_write_byte(i2c, BME280_REG_CONFIG, config);
-    bme280_write_byte(i2c, BME280_REG_CTRL_MEAS, ctrl_meas);
-}
-
-
 // Function to read a single byte from the BME280
 uint8_t bme280_read_byte(i2c_inst_t *i2c, uint8_t reg)
 {
@@ -102,6 +80,26 @@ void bme280_write_byte(i2c_inst_t *i2c, uint8_t reg, uint8_t data)
     i2c_write_blocking(i2c, BME280_ADDR, buf, 2, false);
 }
 
+void init_bme280(i2c_inst_t *i2c)
+{
+    //clock: 100kHz
+    //sensor mode: forced mode
+    //highest oversampling for temperature, pressure and humidity
+    //highest filter coefficient
+    //highest resolution
+    uint8_t sensor_mode = 0b01; //forced mode
+    uint8_t temp_oversampling = 0b101; //x16
+    uint8_t press_oversampling = 0b101; //x16
+    uint8_t hum_oversampling = 0b101; //x16
+    uint8_t filter_coefficient = 0b100; //16
+    uint8_t spi3w_en = 0b0; //3-wire SPI disabled
+    uint8_t config = (spi3w_en << 0) | (filter_coefficient << 2);
+    uint8_t ctrl_meas = (temp_oversampling << 5) | (press_oversampling << 2) | sensor_mode;
+    uint8_t ctrl_hum = hum_oversampling;
+    bme280_write_byte(i2c, BME280_REG_CTRL_MEAS, ctrl_meas);
+    bme280_write_byte(i2c, BME280_REG_CONFIG, config);
+    bme280_write_byte(i2c, BME280_REG_CTRL_MEAS, ctrl_meas);
+}
 
 bme280_calib_data_temp Read_Temperature_Calibration_Data(i2c_inst_t *i2c)
 {
