@@ -28,27 +28,6 @@ const uint8_t BME280_REG_HUM_MSB = 0xFD;
 const uint8_t BME280_REG_CALIB_00 = 0x88;
 const uint8_t BME280_REG_CALIB_26 = 0xE1;
 
-// Calibration Data Structures
-struct bme280_calib_data {
-    uint16_t dig_T1;
-    int16_t dig_T2;
-    int16_t dig_T3;
-    uint16_t dig_P1;
-    int16_t dig_P2;
-    int16_t dig_P3;
-    int16_t dig_P4;
-    int16_t dig_P5;
-    int16_t dig_P6;
-    int16_t dig_P7;
-    int16_t dig_P8;
-    int16_t dig_P9;
-    uint8_t dig_H1;
-    int16_t dig_H2;
-    uint8_t dig_H3;
-    int16_t dig_H4;
-    int16_t dig_H5;
-    int8_t dig_H6;
-};
 
 // Function to read a single byte from the BME280
 uint8_t bme280_read_byte(i2c_inst_t *i2c, uint8_t reg) {
