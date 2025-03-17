@@ -11,9 +11,6 @@
 #define VIRTUAL_ENABLE_LINE 4
 #define VIRTUAL_NOTIFY_LINE 5
 
-#define BME280_I2C_ADDR 0x76  // Default I2C address for BME280
-#define I2C_PORT i2c0         // Use I2C0
-
 typedef struct BME280Data {
     float temperature;
     float pressure;
