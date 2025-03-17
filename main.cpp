@@ -39,6 +39,7 @@ void catch_error()
 int main()
 {
     init_gpio();
+    initBME280();
     while (true)
     {
         BME280Data data = readBME280();
