@@ -49,7 +49,7 @@ bool isUpsideDown();
 void sendVUARTString(std::string data);
 
 //BME280 functions
-void init_bme280(i2c_inst_t *i2c)
+void init_bme280(i2c_inst_t *i2c);
 //temperature
 bme280_calib_data_temp Read_Temperature_Calibration_Data(i2c_inst_t *i2c);
 long signed int Read_Temperature(i2c_inst_t *i2c);
