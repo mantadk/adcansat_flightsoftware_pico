@@ -39,16 +39,28 @@ void catch_error()
 int main()
 {
     init_gpio();
-    initBME280();
+    i2c_inst_t *i2c = i2c0; 
+    int sda_pin = 14;
+    int scl_pin = 15;
+    int i2c_baudrate = 100000;
+    i2c_init(i2c, i2c_baudrate);
+    gpio_set_function(sda_pin, GPIO_FUNC_I2C);
+    gpio_set_function(scl_pin, GPIO_FUNC_I2C);
+    gpio_pull_up(sda_pin);
+    gpio_pull_up(scl_pin);
+    if (!bme280_init(i2c)) {
+        printf("BME280 initialization failed!\n");
+        return 1; // Exit with error code
+    }
+    struct bme280_calib_data calib;
+    bme280_read_calibration_data(i2c, &calib);
+
+    
     while (true)
     {
-        BME280Data data = readBME280();
-        bool upsideDown = isUpsideDown();
-        std::string datasummary = "ud:" + std::string(upsideDown ? "1;" : "0;");
-        datasummary += "t:" + std::to_string(data.temperature) + ";";
-        datasummary += "p:" + std::to_string(data.pressure) + ";";
-        datasummary += "h:" + std::to_string(data.humidity) + ";";
+        std::string datasummary = bme280_read_measurements_string(i2c, &calib);
         sendVUARTString(datasummary);
+        sleep_ms(100);
     }
 
     return 0;

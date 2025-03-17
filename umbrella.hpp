@@ -18,7 +18,9 @@ typedef struct BME280Data {
 } BME280Data;
 
 bool isUpsideDown();
-void initBME280();
-BME280Data readBME280();
+// void initBME280();
+// BME280Data readBME280();
 // int sendString(const std::string& data);
 void sendVUARTString(std::string data);
+bool bme280_init(i2c_inst_t *i2c);
+std::string bme280_read_measurements_string(i2c_inst_t *i2c, struct bme280_calib_data *calib);
