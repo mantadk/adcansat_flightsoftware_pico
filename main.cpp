@@ -39,17 +39,21 @@ void catch_error()
 int main()
 {
     init_gpio();
+    sendVUARTString("GPIO init done");
     i2c_inst_t *i2c = i2c0; 
     int sda_pin = 14;
     int scl_pin = 15;
     int i2c_baudrate = 100000;
     i2c_init(i2c, i2c_baudrate);
+    sendVUARTString("I2C init done");
     gpio_set_function(sda_pin, GPIO_FUNC_I2C);
     gpio_set_function(scl_pin, GPIO_FUNC_I2C);
     gpio_pull_up(sda_pin);
     gpio_pull_up(scl_pin);
     init_bme280(i2c);
+    sendVUARTString("BME280 init done");
     bme280_calib_data_temp calib = Read_Temperature_Calibration_Data(i2c);
+    sendVUARTString("Temperature calibration done");
     while (true)
     {
         long signed int raw = Read_Temperature(i2c);
