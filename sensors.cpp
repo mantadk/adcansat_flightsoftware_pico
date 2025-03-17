@@ -1,7 +1,7 @@
 #include "umbrella.hpp"
 
 bool isUpsideDown() {                             //Is the sensor upside down?
-    return !gpio_get(UPSIDE_DOWN_SENSOR);            // Read and return the state
+    return !(gpio_get(UPSIDE_DOWN_SENSOR));            // Read and return the state
 }
 
 //read BME 280 sensor data via I2C

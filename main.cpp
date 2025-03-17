@@ -41,10 +41,12 @@ int main()
     init_gpio();
     while (true)
     {
-        //BME280Data data = readBME280();
+        BME280Data data = readBME280();
         bool upsideDown = isUpsideDown();
-        const std::string datasummary = "ud: " + std::string(upsideDown ? "1\n" : "0\n");
-        //"Temperature: " + std::to_string(data.temperature) + " Pressure: " + std::to_string(data.pressure) + " Humidity: " + std::to_string(data.humidity) + " Upside Down: " + std::to_string(upsideDown);
+        std::string datasummary = "ud:" + std::string(upsideDown ? "1;" : "0;");
+        datasummary += "t:" + std::to_string(data.temperature) + ";";
+        datasummary += "p:" + std::to_string(data.pressure) + ";";
+        datasummary += "h:" + std::to_string(data.humidity) + ";";
         sendVUARTString(datasummary);
     }
 
