@@ -52,13 +52,18 @@ void sendChar(char c)
 void sendVUARTString(std::string data)
 {
     data += '\n';
+    gpio_put(LED, 1); // Turn on the LED
     notif();
     for (int i = 0; i < data.length(); i++)
     {
         sendChar(data[i]);
     }
     stopnotif();
+    gpio_put(LED, 0); // Turn off the LED
     sleep_ms(100);
+    gpio_put(LED, 1); // Turn on the LED
+    sleep_ms(10);
+    gpio_put(LED, 0); // Turn off the LED
 }
 
 
