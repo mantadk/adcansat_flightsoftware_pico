@@ -6,7 +6,6 @@
 #include <sstream>
 
 #define LED 25
-#define UPSIDE_DOWN_SENSOR 10
 
 #define VIRTUAL_DATA_LINE 2
 #define VIRTUAL_CLOCK_LINE 3
@@ -45,7 +44,6 @@ struct bme280_calib_data_hum {
     signed short dig_H5;
 };
 
-bool isUpsideDown();
 void sendVUARTString(std::string data);
 
 //BME280 functions
