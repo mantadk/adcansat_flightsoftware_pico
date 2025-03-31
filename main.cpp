@@ -23,6 +23,16 @@ void init_gpio()
     }
 }
 
+void init_serial()
+{
+    stdio_init_all();
+}
+
+void printserial(std::string line)
+{
+    printf("%s\n", line.c_str());
+}
+
 void catch_error()
 {
     while (true)
@@ -37,23 +47,33 @@ void catch_error()
 int main()
 {
     init_gpio();
+    init_serial();
+    printserial("Pico GPIO init done");
+    printserial("Pico Serial init done");
     gpio_put(LED, 1);
     sendVUARTString("Pico GPIO init done");
     gpio_put(LED, 0);
+    printserial("Vuart String sent");
     i2c_inst_t *i2c = i2c0; 
     int sda_pin = 14;
     int scl_pin = 15;
     int i2c_baudrate = 100000;
+    printserial("I2C init start");
     i2c_init(i2c, i2c_baudrate);
+    printserial("I2C init done");
     sendVUARTString("I2C init done");
+    printserial("vuart string sent");
     gpio_set_function(sda_pin, GPIO_FUNC_I2C);
     gpio_set_function(scl_pin, GPIO_FUNC_I2C);
     gpio_pull_up(sda_pin);
     gpio_pull_up(scl_pin);
+    printserial("I2C SDA and SCL pins set to I2C function");
     init_bme280(i2c);
     sendVUARTString("BME280 init done");
+    printserial("BME280 init done");
     bme280_calib_data_temp calib = Read_Temperature_Calibration_Data(i2c);
     sendVUARTString("Temperature calibration done");
+    printserial("Temperature calibration done");
     while (true)
     {
         long signed int raw = Read_Temperature(i2c);
