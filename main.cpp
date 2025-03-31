@@ -37,7 +37,9 @@ void catch_error()
 int main()
 {
     init_gpio();
+    gpio_put(LED, 1);
     sendVUARTString("Pico GPIO init done");
+    gpio_put(LED, 0);
     i2c_inst_t *i2c = i2c0; 
     int sda_pin = 14;
     int scl_pin = 15;
