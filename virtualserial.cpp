@@ -58,6 +58,7 @@ void sendVUARTString(std::string data)
         sendChar(data[i]);
     }
     stopnotif();
+    sleep_ms(100);
 }
 
 
