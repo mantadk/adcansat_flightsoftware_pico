@@ -2,12 +2,10 @@
 
 void notif() {
     gpio_put(VIRTUAL_NOTIFY_LINE, 1);
-    gpio_put(LED, 1); // Turn on the LED
 }
 
 void stopnotif() {
     gpio_put(VIRTUAL_NOTIFY_LINE, 0);
-    gpio_put(LED, 0); // Turn off the LED
 }
 
 void write(bool bit)
